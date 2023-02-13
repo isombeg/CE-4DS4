@@ -125,14 +125,9 @@ int problem2(void){
 		while(j < 8){
 			UART_ReadBlocking(TARGET_UART, &tm, 1);
 
-//			printf("enter val: ");
-			//scanf("%c\r\n", &tm);
 			PRINTF("%c\r\n", tm);
 			uart_input[j++] = tm;
-
-			//PRINTF("tm = %c, uart_input = %s, j=%d\n", tm, uart_input, j);
 		}
-//		PRINTF("uart_input: %c\n",uart_input);
 		printf("Now entering parsing!");
 		drive_dc_and_servo(uart_input);
 	}
