@@ -1,3 +1,4 @@
 Debug
 .*
 !/.gitignore
+*.launch
