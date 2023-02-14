@@ -81,12 +81,12 @@ void consumer1_sem(void* pvParameters)
 	SemaphoreHandle_t consumer_semaphore = semaphores[2];
 	BaseType_t status;
 	xSemaphoreGive(consumer_semaphore);
-		status = xSemaphoreTake(producer1_semaphore, portMAX_DELAY);
-		if (status != pdPASS)
-		{
-			PRINTF("Failed to acquire producer1_semaphore\r\n");
-			while (1);
-		}
+	status = xSemaphoreTake(producer1_semaphore, portMAX_DELAY);
+	if (status != pdPASS)
+	{
+		PRINTF("Failed to acquire producer1_semaphore\r\n");
+		while (1);
+	}
 	while(1)
 	{
 		PRINTF("Received Value = %s\r\n", str);
@@ -113,9 +113,9 @@ void consumer2_sem(void* pvParameters)
 	while(1)
 	{
 		while (str[j]){
-				upperSTR[j] = toupper(str[j]);
-				j++;
-			}
+			upperSTR[j] = toupper(str[j]);
+			j++;
+		}
 		upperSTR[j] = '\0';
 		PRINTF("Received Value upper = %s\r\n ", upperSTR);
 

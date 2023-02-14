@@ -27,7 +27,7 @@
 #include "problem1.h"
 #include "problem2.h"
 #include "problem3.h"
-#include "problem4.h"
+//#include "problem4.h"
 
 /*******************************************************************************
  * Definitions
@@ -49,7 +49,7 @@
 
 
 int main(void){
-	return problem3();
+	return problem4_3();
 }
 
 
