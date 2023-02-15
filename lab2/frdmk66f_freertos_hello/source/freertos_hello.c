@@ -23,11 +23,14 @@
 #include "clock_config.h"
 #include "board.h"
 
+/* Experiments include */
+#include "experiments/experiment4.h"
+
 /* Problems include */
 #include "problem1.h"
 #include "problem2.h"
 #include "problem3.h"
-//#include "problem4.h"
+#include "problem4.h"
 
 /*******************************************************************************
  * Definitions
@@ -49,7 +52,7 @@
 
 
 int main(void){
-	return problem4_3();
+	return problem6();
 }
 
 
