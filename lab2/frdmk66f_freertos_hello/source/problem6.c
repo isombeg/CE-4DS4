@@ -65,7 +65,6 @@ void print_task(void* pvParameters){
 		}
 
 		PRINTF("something\n");
-		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 }
 
