@@ -115,7 +115,7 @@ int problem4_2(){
 		PRINTF("Task creation failed!.\r\n");
 		while (1);
 	}
-	status = xTaskCreate(dir_consumer_sem, "consumer", 200, (void*)taskInput, 2, NULL);
+	status = xTaskCreate(dir_consumer_sem, "consumer", 200, (void*)taskInput, 3, NULL);
 	if (status != pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");
