@@ -14,9 +14,10 @@
 int main(void)
 {
     /* Init board hardware. */
+	//BOARD_InitBootPins();
     BOARD_InitBootClocks();
 //
-//    setupMotorComponent();
+    setupMotorComponent();
 //    setupRCReceiverComponent();
 //    setupTerminalComponent();
 //    setupLEDComponent();
@@ -25,5 +26,7 @@ int main(void)
     vTaskStartScheduler();
 
     while(1)
-    {}
+    {
+
+    }
 }

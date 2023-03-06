@@ -20,16 +20,16 @@
 #define INIT_MODE1_SPEED 30
 #define INIT_MODE2_SPEED 90
 
-#define dc_speed_to_dutycyle(speed) speed * 0.025f/100.0f + 0.0615
-#define direction_to_coeff(mode) direction == FORWARD ? 1 : -1
+#define dc_speed_to_dutycycle(speed) speed * 0.025f/100.0f + 0.0615
+#define direction_to_coeff(direction) direction == FORWARD ? 1 : -1
 
-enum MotorMesssage_t {
+typedef enum {
 	SPEED_MODE,
 	SPEED_COMPENSATION
-};
+} MotorMesssage_t;
 
-enum SpeedDirection_t {FORWARD, BACKWARD};
-enum SpeedMode_t {MODE0, MODE1, MODE2};
+typedef enum {FORWARD, BACKWARD} SpeedDirection_t;
+typedef enum {MODE0, MODE1, MODE2} SpeedMode_t;
 
 typedef struct __MotorQueueMessage_t__ {
 	MotorMesssage_t type;
@@ -59,7 +59,8 @@ void motorTask(void* pvParameters);
 void positionTask(void* pvParameters);
 
 void updateMotorSpeed(MotorQueueMessage_t message);
-int modeToSpeed()
+
+void testMotorTask();
 
 
 #endif /* MOTOR_CONTROL_COMPONENT_H */

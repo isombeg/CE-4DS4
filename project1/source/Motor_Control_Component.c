@@ -22,7 +22,7 @@ void setupMotorComponent()
 	}
 
 	//Create Motor Task
-	status = xTaskCreate(motorTask, "Motor Task", 200, NULL, 3, NULL);
+	status_t status = xTaskCreate(motorTask, "Motor Task", 200, NULL, 3, NULL);
 	if (status != pdPASS)
 	{
 		PRINTF("Task creation failed!.\r\n");
@@ -37,13 +37,14 @@ void setupMotorComponent()
 void setupMotorPins()
 {
     //Configure PWM pins for DC and Servo motors
-	setupPWM(FTM_CHANNEL_SERVO_MOTOR);
-	setupPWM(FTM_CHANNEL_DC_MOTOR);
+
+
 }
 
 void setupDCMotor()
 {
 	//Initialize PWM for DC motor
+	setupPWM(FTM_CHANNEL_SERVO);
 	updatePWM_dutyCycle(
 		FTM_CHANNEL_DC_MOTOR,
 		dc_speed_to_dutycycle(0)
@@ -54,6 +55,7 @@ void setupDCMotor()
 void setupServo()
 {
 	//Initialize PWM for Servo motor
+	setupPWM(FTM_CHANNEL_DC_MOTOR);
 	return;
 }
 
@@ -73,10 +75,10 @@ void setupPWM(ftm_chnl_t chnlNumber)
 	FTM_GetDefaultConfig(&ftmInfo);
 	ftmInfo.prescale = kFTM_Prescale_Divide_128;
 
-	FTM_Init(FTM_MOTOR, &ftmInfo);
-	FTM_SetupPwm(FTM_MOTOR, &ftmParam, 1U, kFTM_EdgeAlignedPwm, 50U, CLOCK_GetFreq(
+	FTM_Init(FTM_MOTORS, &ftmInfo);
+	FTM_SetupPwm(FTM_MOTORS, &ftmParam, 1U, kFTM_EdgeAlignedPwm, 50U, CLOCK_GetFreq(
 	kCLOCK_BusClk));
-	FTM_StartTimer(FTM_MOTOR, kFTM_SystemClock);
+	FTM_StartTimer(FTM_MOTORS, kFTM_SystemClock);
 }
 
 void updatePWM_dutyCycle(ftm_chnl_t channel, float dutyCycle)
@@ -112,18 +114,11 @@ void motorTask(void* pvParameters)
 	BaseType_t status;
 	MotorQueueMessage_t message;
 
-	//Initialize mode speeds
-//	mode_speeds = {
-//		INIT_MODE0_SPEED,
-//		INIT_MODE1_SPEED,
-//		INIT_MODE2_SPEED
-//	};
-
 	setupDCMotor();
 
 	while(1){
 		status = xQueueReceive(motor_queue, (void *) &message, portMAX_DELAY);
-		if(status != pdPass){
+		if(status != pdPASS){
 			PRINTF("[Motor Task] Queue Receive failed!.\r\n");
 			while (1);
 		}
@@ -142,9 +137,9 @@ void updateMotorSpeed(MotorQueueMessage_t message){
 		//Update PWM
 	} else {
 		int speed;
-		SpeedModePayload_t payload = (SpeedModePayload_t) *(message->payload);
+		SpeedModePayload_t payload = *((SpeedModePayload_t *) message.payload);
 
-		switch(payload->mode){
+		switch(payload.mode){
 		case MODE0:
 			speed = INIT_MODE0_SPEED;
 			break;
@@ -158,7 +153,7 @@ void updateMotorSpeed(MotorQueueMessage_t message){
 
 		updatePWM_dutyCycle(
 			FTM_CHANNEL_DC_MOTOR,
-			direction_to_coeff(payload->direction) * dc_speed_to_dutycycle(speed)
+			direction_to_coeff(payload.direction) * dc_speed_to_dutycycle(speed)
 		);
 	}
 }
@@ -169,4 +164,34 @@ void positionTask(void* pvParameters)
 {
 	//Position task implementation
 
+}
+
+void testMotorTask(){
+	SpeedMode_t modes[] = {MODE0, MODE1, MODE2};
+	SpeedDirection_t dirs[] = {FORWARD, BACKWARD};
+
+	MotorQueueMessage_t *message = malloc(sizeof(MotorQueueMessage_t));
+	message->type = SPEED_MODE;
+
+	SpeedModePayload_t *payload = malloc(sizeof(SpeedModePayload_t));
+	message->payload = (void*) payload;
+
+	while(1){
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; i < 2; j++){
+				SpeedModePayload_t payload = {dirs[i], modes[j]};
+				MotorQueueMessage_t msg = {SPEED_MODE, (void *) &payload};
+
+				PRINTF("[TEST - Motor Task] Mode Code: %d, Direction Code: %d\n", modes[i], dirs[j]);
+				payload.mode = modes[i];
+				payload.direction = dirs[j];
+
+				xQueueSendToBack(motor_queue, (void*) &msg, portMAX_DELAY);
+
+				// Delay
+				for(volatile int i = 0U; i < 10000000; i++)
+					__asm("NOP");
+			}
+		}
+	}
 }
