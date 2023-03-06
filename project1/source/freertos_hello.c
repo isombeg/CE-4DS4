@@ -11,6 +11,9 @@
 #include "LED_Component.h"
 #include "Accelerometer_Component.h"
 
+/* Test includes */
+#include "Motor_Control_Component_Test.h"
+
 int main(void)
 {
     /* Init board hardware. */
@@ -23,6 +26,7 @@ int main(void)
 //    setupLEDComponent();
 //    setupAccelerometerComponent();
 
+    test_MotorTask();
     vTaskStartScheduler();
 
     while(1)

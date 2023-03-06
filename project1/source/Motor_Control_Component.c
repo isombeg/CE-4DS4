@@ -37,7 +37,7 @@ void setupMotorComponent()
 void setupMotorPins()
 {
     //Configure PWM pins for DC and Servo motors
-
+	return;
 
 }
 
@@ -166,32 +166,4 @@ void positionTask(void* pvParameters)
 
 }
 
-void testMotorTask(){
-	SpeedMode_t modes[] = {MODE0, MODE1, MODE2};
-	SpeedDirection_t dirs[] = {FORWARD, BACKWARD};
 
-	MotorQueueMessage_t *message = malloc(sizeof(MotorQueueMessage_t));
-	message->type = SPEED_MODE;
-
-	SpeedModePayload_t *payload = malloc(sizeof(SpeedModePayload_t));
-	message->payload = (void*) payload;
-
-	while(1){
-		for(int i = 0; i < 3; i++){
-			for(int j = 0; i < 2; j++){
-				SpeedModePayload_t payload = {dirs[i], modes[j]};
-				MotorQueueMessage_t msg = {SPEED_MODE, (void *) &payload};
-
-				PRINTF("[TEST - Motor Task] Mode Code: %d, Direction Code: %d\n", modes[i], dirs[j]);
-				payload.mode = modes[i];
-				payload.direction = dirs[j];
-
-				xQueueSendToBack(motor_queue, (void*) &msg, portMAX_DELAY);
-
-				// Delay
-				for(volatile int i = 0U; i < 10000000; i++)
-					__asm("NOP");
-			}
-		}
-	}
-}

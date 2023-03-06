@@ -2,3 +2,5 @@ Debug
 .*
 !/.gitignore
 *.launch
+!*/.cproject
+!*/.project
