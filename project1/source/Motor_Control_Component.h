@@ -60,5 +60,4 @@ void positionTask(void* pvParameters);
 
 void updateMotorSpeed(MotorQueueMessage_t message);
 
-
 #endif /* MOTOR_CONTROL_COMPONENT_H */

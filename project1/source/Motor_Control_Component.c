@@ -159,11 +159,9 @@ void updateMotorSpeed(MotorQueueMessage_t message){
 }
 
 
-
 void positionTask(void* pvParameters)
 {
 	//Position task implementation
-
 }
 
 
