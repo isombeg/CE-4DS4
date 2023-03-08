@@ -21,10 +21,10 @@
 
 #define TARGET_UART				UART4
 
-#define LEFT_BIT				//Define event group bit
-#define RIGHT_BIT				//Define event group bit
-#define UP_BIT					//Define event group bit
-#define DOWN_BIT				//Define event group bit
+#define LEFT_BIT    (1 << 0)
+#define RIGHT_BIT   (1 << 1)
+#define UP_BIT      (1 << 2)
+#define DOWN_BIT    (1 << 3)
 
 extern EventGroupHandle_t event_group;
 extern QueueHandle_t uart_queue;
