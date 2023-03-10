@@ -65,7 +65,7 @@ void rcTask(void* pvParameters)
 	//RC task implementation
 	//float  dc_dutyCycle;
 	//float servo_dutyCycle;
-	int direction,dc_speed,servo_angle;
+	int direction,*dc_speed = malloc(sizeof(int)),*servo_angle=malloc(sizeof(int));
 
 	float * dc_dutyCycle = malloc(sizeof(float));
 	float * servo_dutyCycle = malloc(sizeof(float));
@@ -97,29 +97,29 @@ void rcTask(void* pvParameters)
 
 		if(rc_values.header == 0x4020)
 		{
-			//printf("CH 1 = %d\t", rc_values.ch1); //Angle
-			//printf("CH 3 = %d\t", rc_values.ch3); //Speed
-			//printf("CH 6 = %d\t", rc_values.ch6); // Direction
-			//printf("CH 7 = %d\t\r\n", rc_values.ch7); // Mode //1000 = 0, MAX = 2000
+			PRINTF("CH 1 = %d\t", rc_values.ch1); //Angle
+			PRINTF("CH 3 = %d\t", rc_values.ch3); //Speed
+			PRINTF("CH 6 = %d\t", rc_values.ch6); // Direction
+			PRINTF("CH 7 = %d\t\r\n", rc_values.ch7); // Mode //1000 = 0, MAX = 2000
 			(rc_values.ch6==2000) ? (direction = -1) : (direction = 1);
 
-			servo_angle = (45*(rc_values.ch1-1500))/500;
+			*servo_angle = (45*(rc_values.ch1-1500))/500;
 
 
 			if(rc_values.ch7 == 2000){
-				dc_speed=.5*direction * (100*(rc_values.ch3-1000))/1000;
+				*dc_speed=.5*direction * (100*(rc_values.ch3-1000))/1000;
 			}
 			if(rc_values.ch7 == 1500){
-				dc_speed=.75*direction * (100*(rc_values.ch3-1000))/1000;
+				*dc_speed=.75*direction * (100*(rc_values.ch3-1000))/1000;
 			}
 			if(rc_values.ch7 == 1000){
-				dc_speed=1*direction * (100*(rc_values.ch3-1000))/1000;
+				*dc_speed=1*direction * (100*(rc_values.ch3-1000))/1000;
 			}
-			*dc_dutyCycle =  dc_speed* 0.00025f + 0.070;
-			*servo_dutyCycle = servo_angle * 0.00025f + 0.065;//needs to be double checked
-			printf("Servo Angle: %d\n DC Speed: %d",servo_angle,dc_speed);
-			xQueueSendToBack(motor_queue, (void*) dc_dutyCycle, portMAX_DELAY);
-			xQueueSendToBack(angle_queue, (void*) servo_dutyCycle, portMAX_DELAY);
+//			*dc_dutyCycle =  dc_speed* 0.00025f + 0.070;
+//			*servo_dutyCycle = servo_angle * 0.00025f + 0.065;//needs to be double checked
+			printf("[RC Task] Servo Angle: %d\n DC Speed: %d\r\n",*servo_angle,*dc_speed);
+			xQueueSendToBack(motor_queue, (void*) dc_speed, portMAX_DELAY);
+			xQueueSendToBack(angle_queue, (void*) servo_angle, portMAX_DELAY);
 			//printf("sent to queue");
 			//status = xQueueSendToBack(led_queue, (void*) &rc_values.ch7, portMAX_DELAY);
 

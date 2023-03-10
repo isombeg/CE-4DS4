@@ -20,7 +20,7 @@ void setupMotorComponent()
 }
 
 void setupMotorComponentTask(void task(void*), QueueHandle_t* queue, char* taskName){
-	if ((*queue = xQueueCreate(10, sizeof(int))) == NULL){
+	if ((*queue = xQueueCreate(1, sizeof(int))) == NULL){
 		PRINTF("[Motor Component] %s queue creation failed!\r\n", taskName);
 		while(1);
 	}
@@ -133,7 +133,7 @@ void motorTask(void* pvParameters)
 			FTM_CHANNEL_DC_MOTOR,
 			dc_speed_to_dutycycle(speed)
 		);
-//		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
+		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 //		vTaskDelay(10/portTICK_PERIOD_MS);
 
 	}
