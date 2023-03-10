@@ -46,7 +46,7 @@ void setupRCPins()
 	//Configure RC pins
 	CLOCK_EnableClock(kCLOCK_PortC);
 
-	PORT_SetPinMux(PORTC, 3U,kPORT_MuxAlt3);
+	PORT_SetPinMux(PORTC, 3U,kPORT_MuxAlt3); // ! probs disables
 }
 
 void setupUART_RC()
@@ -65,18 +65,19 @@ void rcTask(void* pvParameters)
 	//RC task implementation
 	//float  dc_dutyCycle;
 	//float servo_dutyCycle;
-	int direction,*dc_speed = malloc(sizeof(int)),*servo_angle=malloc(sizeof(int));
+	int direction,dc_speed,servo_angle;
 
 	float * dc_dutyCycle = malloc(sizeof(float));
 	float * servo_dutyCycle = malloc(sizeof(float));
 
+	int *speed_ptr, *angle_ptr;
 
 
 	BaseType_t status;
 	RC_Values rc_values;
 
 	uint8_t* ptr = (uint8_t*) &rc_values;
-	printf("in rc task\n");
+//	printf("in rc task\n");
 
 
 	while (1)
@@ -90,39 +91,49 @@ void rcTask(void* pvParameters)
 //		}
 
 		UART_ReadBlocking(UART1, ptr, 1);
-
 		if(*ptr != 0x20)
 			continue;
 		UART_ReadBlocking(UART1, &ptr[1], sizeof(rc_values) - 1);
 
 		if(rc_values.header == 0x4020)
 		{
-			PRINTF("CH 1 = %d\t", rc_values.ch1); //Angle
-			PRINTF("CH 3 = %d\t", rc_values.ch3); //Speed
-			PRINTF("CH 6 = %d\t", rc_values.ch6); // Direction
-			PRINTF("CH 7 = %d\t\r\n", rc_values.ch7); // Mode //1000 = 0, MAX = 2000
+			speed_ptr = malloc(sizeof(int));
+			angle_ptr = malloc(sizeof(int));
+
+//			PRINTF("[RC Task] CH 1 = %d\t", rc_values.ch1); //Angle
+//			PRINTF("CH 3 = %d\t", rc_values.ch3); //Speed
+//			PRINTF("CH 6 = %d\t", rc_values.ch6); // Direction
+//			PRINTF("CH 7 = %d\t\r\n", rc_values.ch7); // Mode //1000 = 0, MAX = 2000
 			(rc_values.ch6==2000) ? (direction = -1) : (direction = 1);
 
-			*servo_angle = (45*(rc_values.ch1-1500))/500;
+//			servo_angle = (45*(rc_values.ch1-1500))/500;
+			*angle_ptr = rc_to_angle(rc_values);
 
 
 			if(rc_values.ch7 == 2000){
-				*dc_speed=.5*direction * (100*(rc_values.ch3-1000))/1000;
+//				dc_speed=.5*direction * (100*(rc_values.ch3-1000))/1000;
+				*speed_ptr = rc_to_speed(rc_values, direction, MODE2_SPEED_SCALE);
 			}
 			if(rc_values.ch7 == 1500){
-				*dc_speed=.75*direction * (100*(rc_values.ch3-1000))/1000;
+//				dc_speed=.75*direction * (100*(rc_values.ch3-1000))/1000;
+				*speed_ptr = rc_to_speed(rc_values, direction, MODE1_SPEED_SCALE);
 			}
 			if(rc_values.ch7 == 1000){
-				*dc_speed=1*direction * (100*(rc_values.ch3-1000))/1000;
+//				dc_speed=1*direction * (100*(rc_values.ch3-1000))/1000;
+				*speed_ptr = rc_to_speed(rc_values, direction, MODE0_SPEED_SCALE);
 			}
-//			*dc_dutyCycle =  dc_speed* 0.00025f + 0.070;
+
+			// ! making it drive motor the same way as the tests to see if it works
+//			*dc_dutyCycle =  dc_speed_to_dutycycle(dc_speed); //dc_speed* 0.00025f + 0.070;
 //			*servo_dutyCycle = servo_angle * 0.00025f + 0.065;//needs to be double checked
-			printf("[RC Task] Servo Angle: %d\n DC Speed: %d\r\n",*servo_angle,*dc_speed);
-			xQueueSendToBack(motor_queue, (void*) dc_speed, portMAX_DELAY);
-			xQueueSendToBack(angle_queue, (void*) servo_angle, portMAX_DELAY);
+//			PRINTF("[RC Task] Sending to MOTOR COMPONENT: Servo Angle: %d\t DC Speed: %d\r\n",*angle_ptr,*speed_ptr);
+			xQueueSendToBack(motor_queue, (void*) speed_ptr, portMAX_DELAY);
+			xQueueSendToBack(angle_queue, (void*) angle_ptr, portMAX_DELAY);
+
+			free(speed_ptr); free(angle_ptr);
 			//printf("sent to queue");
 			//status = xQueueSendToBack(led_queue, (void*) &rc_values.ch7, portMAX_DELAY);
-
+//			vTaskDelay(50/portTICK_PERIOD_MS);
 		}
 
 		//xSemaphoreGive(rc_hold_semaphore);

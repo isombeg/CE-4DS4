@@ -11,10 +11,8 @@
 #include "LED_Component.h"
 #include "Accelerometer_Component.h"
 
-// Test Functions
-#include "Motor_Control_Component_Test.h"
-
 /* Test includes */
+#include "Motor_Control_Component_Test.h"
 
 int main(void)
 {

@@ -43,13 +43,10 @@ void setupDCMotor()
 {
 	//Initialize PWM for DC motor
 	setupPWM(FTM_CHANNEL_DC_MOTOR);
-
 	updatePWM_dutyCycle(
 		FTM_CHANNEL_DC_MOTOR,
 		dc_speed_to_dutycycle(0)
 	);
-
-	FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 	return;
 }
 
@@ -57,8 +54,6 @@ void setupServo()
 {
 	//Initialize PWM for Servo motor
 	setupPWM(FTM_CHANNEL_SERVO);
-
-	FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 	return;
 }
 
@@ -118,7 +113,6 @@ void motorTask(void* pvParameters)
 	int speed;
 
 	setupDCMotor();
-
 	while(1){
 		status = xQueueReceive(motor_queue, (void *) &speed, portMAX_DELAY);
 		if(status != pdPASS){
@@ -126,15 +120,11 @@ void motorTask(void* pvParameters)
 			while (1);
 		}
 
-		PRINTF("[Motor Task] Received value\r\n");
-
-		PRINTF("[Motor Task] Updating speed to %d\r\n", speed);
 		updatePWM_dutyCycle(
 			FTM_CHANNEL_DC_MOTOR,
 			dc_speed_to_dutycycle(speed)
 		);
 		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
-//		vTaskDelay(10/portTICK_PERIOD_MS);
 
 	}
 }
@@ -155,16 +145,13 @@ void positionTask(void* pvParameters)
 			while (1);
 		}
 
-		PRINTF("[Position Task] Received value\r\n");
-
-		// update servo position
-		PRINTF("[Position Task] Updating position to %d\r\n", angle);
 		updatePWM_dutyCycle(
 			FTM_CHANNEL_SERVO,
 			angle_to_dutycycle(angle)
 		);
 		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
-//		vTaskDelay(10/portTICK_PERIOD_MS);
 
 	}
 }
+
+

@@ -16,8 +16,15 @@
 #define FTM_CHANNEL_DC_MOTOR	kFTM_Chnl_0 //Define DC motor channel
 #define FTM_CHANNEL_SERVO		kFTM_Chnl_3 //Define servo PWM channel
 
-#define dc_speed_to_dutycycle(speed) 0.025f * speed /100.0f + 0.0615
-#define angle_to_dutycycle(angle) angle * 0.025f/45.0f + 0.075
+#define DC_MOTOR_PWM_OFFSET 0.063
+#define DC_MOTOR_SPEED_SCALE 100.0f
+#define DC_MOTOR_PWM_HALF_SCALE 0.025f
+#define dc_speed_to_dutycycle(speed) DC_MOTOR_PWM_HALF_SCALE * speed /DC_MOTOR_SPEED_SCALE + DC_MOTOR_PWM_OFFSET
+
+#define POS_MOTOR_PWM_OFFSET 0.068
+#define POS_MOTOR_ANGLE_SCALE 45.0f
+#define POS_MOTOR_PWM_HALF_SCALE 0.025f
+#define angle_to_dutycycle(angle) angle * POS_MOTOR_PWM_HALF_SCALE/POS_MOTOR_ANGLE_SCALE + POS_MOTOR_PWM_OFFSET
 
 extern QueueHandle_t motor_queue, angle_queue;
 

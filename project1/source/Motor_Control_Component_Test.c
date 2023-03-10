@@ -11,7 +11,7 @@ int speed;
 void test_MotorTask(){
 
 	TimerHandle_t timer_handle = xTimerCreate("Periodic timer",
-		200 / portTICK_PERIOD_MS,
+		150 / portTICK_PERIOD_MS,
 		pdTRUE, // Indicates periodic
 		NULL,
 		testTimer_MotorTask
@@ -34,7 +34,7 @@ void testTimer_MotorTask(TimerHandle_t handle){
 	xQueueSendToBack(motor_queue, (void*) new_speed_p, portMAX_DELAY);
 
 	speed += 10;
-	if(speed == 100)
+	if(speed == 100) 
 		speed = -90;
 
 }
@@ -44,7 +44,7 @@ void test_PositionTask(){
 
 	TimerHandle_t timer_handle = xTimerCreate(
 		"Position Testing Periodic Timer",
-		200 / portTICK_PERIOD_MS,
+		30 / portTICK_PERIOD_MS,
 		pdTRUE,
 		NULL,
 		testTimer_PositionTask
@@ -65,6 +65,6 @@ void testTimer_PositionTask(TimerHandle_t handle){
 	xQueueSendToBack(angle_queue, (void*) new_angle_ptr, portMAX_DELAY);
 
 	angle += 10;
-	if(angle > 45)
+	if(angle > 45) 
 		angle = -45;
 }
