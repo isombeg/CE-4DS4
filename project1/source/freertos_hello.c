@@ -17,16 +17,17 @@
 int main(void)
 {
     /* Init board hardware. */
-	//BOARD_InitBootPins();
+	BOARD_InitBootPins();
     BOARD_InitBootClocks();
 //
     setupMotorComponent();
-//    setupRCReceiverComponent();
+    setupRCReceiverComponent();
 //    setupTerminalComponent();
 //    setupLEDComponent();
 //    setupAccelerometerComponent();
 
-    test_MotorTask();
+//    test_MotorTask();
+//    test_PositionTask();
     vTaskStartScheduler();
 
     while(1)
