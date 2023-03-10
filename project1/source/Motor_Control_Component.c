@@ -35,7 +35,6 @@ void setupMotorComponentTask(void task(void*), QueueHandle_t* queue, char* taskN
 void setupMotorPins()
 {
     //Configure PWM pins for DC and Servo motors
-	FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 	return;
 
 }
@@ -44,10 +43,13 @@ void setupDCMotor()
 {
 	//Initialize PWM for DC motor
 	setupPWM(FTM_CHANNEL_DC_MOTOR);
+
 	updatePWM_dutyCycle(
 		FTM_CHANNEL_DC_MOTOR,
 		dc_speed_to_dutycycle(0)
 	);
+
+	FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 	return;
 }
 
@@ -55,6 +57,8 @@ void setupServo()
 {
 	//Initialize PWM for Servo motor
 	setupPWM(FTM_CHANNEL_SERVO);
+
+	FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 	return;
 }
 

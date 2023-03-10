@@ -33,6 +33,4 @@ void updatePWM_dutyCycle(ftm_chnl_t channel, float dutyCycle);
 void motorTask(void* pvParameters);
 void positionTask(void* pvParameters);
 
-void updateMotorSpeed(MotorQueueMessage_t message);
-
 #endif /* MOTOR_CONTROL_COMPONENT_H */
