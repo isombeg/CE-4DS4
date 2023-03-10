@@ -106,10 +106,10 @@ void rcTask(void* pvParameters)
 			if(rc_values.ch7 == 1500){
 				dc_speed=dc_speed*.75;
 			}
-			dc_dutyCycle =  dc_speed* 0.00025f + 0.0615;
-			servo_dutyCycle = servo_angle * 0.00025f + 0.075;//needs to be double checked
-			status = xQueueSendToBack(motor_queue, (void*) &dc_dutyCycle, portMAX_DELAY);
-			status = xQueueSendToBack(angle_queue, (void*) &servo_dutyCycle, portMAX_DELAY);
+			//dc_dutyCycle =  dc_speed* 0.00025f + 0.0615;
+			//servo_dutyCycle = servo_angle * 0.00025f + 0.075;//needs to be double checked
+			status = xQueueSendToBack(motor_queue, (void*) &dc_speed, portMAX_DELAY);
+			status = xQueueSendToBack(angle_queue, (void*) &servo_angle, portMAX_DELAY);
 			status = xQueueSendToBack(led_queue, (void*) &rc_values.ch7, portMAX_DELAY);
 
 		}

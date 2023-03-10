@@ -11,8 +11,10 @@
 #include "LED_Component.h"
 #include "Accelerometer_Component.h"
 
-/* Test includes */
+// Test Functions
 #include "Motor_Control_Component_Test.h"
+
+/* Test includes */
 
 int main(void)
 {
@@ -27,6 +29,7 @@ int main(void)
 //    setupAccelerometerComponent();
 
     test_MotorTask();
+    test_PositionTask();
     vTaskStartScheduler();
 
     while(1)

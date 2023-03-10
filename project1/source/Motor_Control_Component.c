@@ -3,8 +3,6 @@
 QueueHandle_t motor_queue;
 QueueHandle_t angle_queue;
 
-ModeSpeeds_t mode_speeds;
-
 void setupMotorComponent()
 {
 	setupMotorPins();
@@ -13,30 +11,31 @@ void setupMotorComponent()
 	setupServo();
 
     /*************** Motor Task ***************/
-	//Create Motor Queue
-	motor_queue = xQueueCreate(10, sizeof(MotorQueueMessage_t));
-	if (motor_queue == NULL)
-	{
-		PRINTF("Queue creation failed!.\r\n");
-		while (1);
-	}
-
-	//Create Motor Task
-	status_t status = xTaskCreate(motorTask, "Motor Task", 200, NULL, 3, NULL);
-	if (status != pdPASS)
-	{
-		PRINTF("Task creation failed!.\r\n");
-		while (1);
-	}
+	//Create Motor Queue and Motor Task
+	setupMotorComponentTask(motorTask, &motor_queue, "motorTask");
 
     /*************** Position Task ***************/
-	//Create Angle Queue
+	//Create Angle Queue and Position Task
+	setupMotorComponentTask(positionTask, &angle_queue, "positionTask");
+}
+
+void setupMotorComponentTask(void task(void*), QueueHandle_t* queue, char* taskName){
+	if ((*queue = xQueueCreate(10, sizeof(int))) == NULL){
+		PRINTF("[Motor Component] %s queue creation failed!\r\n", taskName);
+		while(1);
+	}
+
 	//Create Position Task
+	if((xTaskCreate(task, taskName, 200, NULL, 3, NULL)) != pdPASS){
+		PRINTF("[Motor Component] %s creation failed!\r\n", taskName);
+		while(1);
+	}
 }
 
 void setupMotorPins()
 {
     //Configure PWM pins for DC and Servo motors
+	FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 	return;
 
 }
@@ -44,7 +43,7 @@ void setupMotorPins()
 void setupDCMotor()
 {
 	//Initialize PWM for DC motor
-	setupPWM(FTM_CHANNEL_SERVO);
+	setupPWM(FTM_CHANNEL_DC_MOTOR);
 	updatePWM_dutyCycle(
 		FTM_CHANNEL_DC_MOTOR,
 		dc_speed_to_dutycycle(0)
@@ -55,7 +54,7 @@ void setupDCMotor()
 void setupServo()
 {
 	//Initialize PWM for Servo motor
-	setupPWM(FTM_CHANNEL_DC_MOTOR);
+	setupPWM(FTM_CHANNEL_SERVO);
 	return;
 }
 
@@ -112,12 +111,12 @@ void motorTask(void* pvParameters)
 	//Motor task implementation
 
 	BaseType_t status;
-	MotorQueueMessage_t message;
+	int speed;
 
 	setupDCMotor();
 
 	while(1){
-		status = xQueueReceive(motor_queue, (void *) &message, portMAX_DELAY);
+		status = xQueueReceive(motor_queue, (void *) &speed, portMAX_DELAY);
 		if(status != pdPASS){
 			PRINTF("[Motor Task] Queue Receive failed!.\r\n");
 			while (1);
@@ -125,36 +124,14 @@ void motorTask(void* pvParameters)
 
 		PRINTF("[Motor Task] Received value\r\n");
 
-		updateMotorSpeed(message);
-		vTaskDelay(10/portTICK_PERIOD_MS);
-
-	}
-}
-
-void updateMotorSpeed(MotorQueueMessage_t message){
-	if(message.type == SPEED_COMPENSATION){
-		//Compensate
-		//Update PWM
-	} else {
-		int speed;
-		SpeedModePayload_t payload = *((SpeedModePayload_t *) message.payload);
-
-		switch(payload.mode){
-		case MODE0:
-			speed = INIT_MODE0_SPEED;
-			break;
-		case MODE1:
-			speed = INIT_MODE1_SPEED;
-			break;
-		case MODE2:
-			speed = INIT_MODE2_SPEED;
-			break;
-		}
-
+		PRINTF("[Motor Task] Updating speed to %d\r\n", speed);
 		updatePWM_dutyCycle(
 			FTM_CHANNEL_DC_MOTOR,
-			direction_to_coeff(payload.direction) * dc_speed_to_dutycycle(speed)
+			dc_speed_to_dutycycle(speed)
 		);
+//		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
+//		vTaskDelay(10/portTICK_PERIOD_MS);
+
 	}
 }
 
@@ -162,6 +139,28 @@ void updateMotorSpeed(MotorQueueMessage_t message){
 void positionTask(void* pvParameters)
 {
 	//Position task implementation
+	BaseType_t status;
+	int angle;
+
+	setupServo();
+
+	while(1){
+		status = xQueueReceive(angle_queue, (void *) &angle, portMAX_DELAY);
+		if(status != pdPASS){
+			PRINTF("[Position Task] Queue Receive failed!.\r\n");
+			while (1);
+		}
+
+		PRINTF("[Position Task] Received value\r\n");
+
+		// update servo position
+		PRINTF("[Position Task] Updating position to %d\r\n", angle);
+		updatePWM_dutyCycle(
+			FTM_CHANNEL_SERVO,
+			angle_to_dutycycle(angle)
+		);
+		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
+//		vTaskDelay(10/portTICK_PERIOD_MS);
+
+	}
 }
-
-

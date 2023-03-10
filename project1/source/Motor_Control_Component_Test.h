@@ -17,4 +17,7 @@
 void test_MotorTask();
 void testTimer_MotorTask(TimerHandle_t);
 
+void test_PositionTask();
+void testTimer_PositionTask(TimerHandle_t);
+
 #endif /* MOTOR_CONTROL_COMPONENT_TEST_H_ */
