@@ -61,15 +61,16 @@ BOARD_InitPins:
 void BOARD_InitPins(void)
 {
     /* Port A Clock Gate Control: Clock enabled */
-    //CLOCK_EnableClock(kCLOCK_PortA);
+    CLOCK_EnableClock(kCLOCK_PortA);
     /* Port B Clock Gate Control: Clock enabled */
-    //CLOCK_EnableClock(kCLOCK_PortB);
+    CLOCK_EnableClock(kCLOCK_PortB);
 
     CLOCK_EnableClock(kCLOCK_PortC);
     CLOCK_EnableClock(kCLOCK_PortD);
     CLOCK_EnableClock(kCLOCK_PortE);
 
     PORT_SetPinMux(PORTC, 1U, kPORT_MuxAlt4);
+    PORT_SetPinMux(PORTA, 6U, kPORT_MuxAlt3);
 
     // UART Pin Mux Setup
     PORT_SetPinMux(PORTC, 12U,kPORT_MuxAlt3);
@@ -78,12 +79,12 @@ void BOARD_InitPins(void)
     PORT_SetPinMux(PORTC, 15U, kPORT_MuxAlt3);
     PORT_SetPinMux(PORTE, 27U, kPORT_MuxAlt3);
 
-    /*PORT_SetPinMux(PORTB, 8U, kPORT_MuxAsGpio); //kept as 1
-        PORT_SetPinMux(PORTB, 10U, kPORT_MuxAlt2);  // accel
-        PORT_SetPinMux(PORTB, 17U, kPORT_MuxAlt2); //miso
-        PORT_SetPinMux(PORTB, 11U, kPORT_MuxAlt2); //sck
-        PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt2); //mosi
-        PORT_SetPinMux(PORTA, 25U, kPORT_MuxAsGpio);*/
+    PORT_SetPinMux(PORTB, 8U, kPORT_MuxAsGpio); //kept as 1
+	PORT_SetPinMux(PORTB, 10U, kPORT_MuxAlt2);  // accel
+	PORT_SetPinMux(PORTB, 17U, kPORT_MuxAlt2); //miso
+	PORT_SetPinMux(PORTB, 11U, kPORT_MuxAlt2); //sck
+	PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt2); //mosi
+	PORT_SetPinMux(PORTA, 25U, kPORT_MuxAsGpio);
 
     /* PORTB16 (pin E10) is configured as UART0_RX */
    PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt3);
