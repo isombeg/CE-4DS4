@@ -70,7 +70,7 @@ void rcTask(void* pvParameters)
 	float * dc_dutyCycle = malloc(sizeof(float));
 	float * servo_dutyCycle = malloc(sizeof(float));
 
-	int *speed_ptr, *angle_ptr;
+	int *speed_ptr, *angle_ptr, *led_ptr;
 
 
 	BaseType_t status;
@@ -99,6 +99,7 @@ void rcTask(void* pvParameters)
 		{
 			speed_ptr = malloc(sizeof(int));
 			angle_ptr = malloc(sizeof(int));
+			led_ptr = malloc(sizeof(int));
 
 //			PRINTF("[RC Task] CH 1 = %d\t", rc_values.ch1); //Angle
 //			PRINTF("CH 3 = %d\t", rc_values.ch3); //Speed
@@ -113,14 +114,17 @@ void rcTask(void* pvParameters)
 			if(rc_values.ch7 == 2000){
 //				dc_speed=.5*direction * (100*(rc_values.ch3-1000))/1000;
 				*speed_ptr = rc_to_speed(rc_values, direction, MODE2_SPEED_SCALE);
+				*led_ptr = 0;
 			}
 			if(rc_values.ch7 == 1500){
 //				dc_speed=.75*direction * (100*(rc_values.ch3-1000))/1000;
 				*speed_ptr = rc_to_speed(rc_values, direction, MODE1_SPEED_SCALE);
+				*led_ptr = 1;
 			}
 			if(rc_values.ch7 == 1000){
 //				dc_speed=1*direction * (100*(rc_values.ch3-1000))/1000;
 				*speed_ptr = rc_to_speed(rc_values, direction, MODE0_SPEED_SCALE);
+				*led_ptr = 2;
 			}
 
 			// ! making it drive motor the same way as the tests to see if it works
@@ -130,9 +134,9 @@ void rcTask(void* pvParameters)
 			xQueueSendToBack(motor_queue, (void*) speed_ptr, portMAX_DELAY);
 			xQueueSendToBack(angle_queue, (void*) angle_ptr, portMAX_DELAY);
 
-			free(speed_ptr); free(angle_ptr);
+			free(speed_ptr); free(angle_ptr); free(led_ptr);
 			//printf("sent to queue");
-			//status = xQueueSendToBack(led_queue, (void*) &rc_values.ch7, portMAX_DELAY);
+			status = xQueueSendToBack(led_queue, (void*) led_ptr, portMAX_DELAY);
 //			vTaskDelay(50/portTICK_PERIOD_MS);
 		}
 

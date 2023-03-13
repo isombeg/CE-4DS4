@@ -16,10 +16,13 @@
 #define FTM_CHANNEL_DC_MOTOR	kFTM_Chnl_0 //Define DC motor channel
 #define FTM_CHANNEL_SERVO		kFTM_Chnl_3 //Define servo PWM channel
 
-#define DC_MOTOR_PWM_OFFSET 0.063
+#define DC_MOTOR_PWM_OFFSET 0.0615
 #define DC_MOTOR_SPEED_SCALE 100.0f
 #define DC_MOTOR_PWM_HALF_SCALE 0.025f
-#define dc_speed_to_dutycycle(speed) DC_MOTOR_PWM_HALF_SCALE * speed /DC_MOTOR_SPEED_SCALE + DC_MOTOR_PWM_OFFSET
+//DC_MOTOR_PWM_HALF_SCALE *
+//dc_dutyCycle =  dc_speed* 0.00025f + 0.0615;
+//servo_dutyCycle = servo_angle * 0.00025f + 0.075;
+#define dc_speed_to_dutycycle(speed) .00025f*speed + DC_MOTOR_PWM_OFFSET
 
 #define POS_MOTOR_PWM_OFFSET 0.068
 #define POS_MOTOR_ANGLE_SCALE 45.0f

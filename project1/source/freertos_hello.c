@@ -23,7 +23,7 @@ int main(void)
     setupMotorComponent();
     setupRCReceiverComponent();
 //    setupTerminalComponent();
-//    setupLEDComponent();
+    setupLEDComponent();
 //    setupAccelerometerComponent();
 
 //    test_MotorTask();
