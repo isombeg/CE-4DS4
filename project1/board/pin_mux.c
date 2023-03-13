@@ -66,6 +66,7 @@ void BOARD_InitPins(void)
     //CLOCK_EnableClock(kCLOCK_PortB);
 
     CLOCK_EnableClock(kCLOCK_PortC);
+    CLOCK_EnableClock(kCLOCK_PortD);
     CLOCK_EnableClock(kCLOCK_PortE);
 
     PORT_SetPinMux(PORTC, 1U, kPORT_MuxAlt4);
@@ -84,7 +85,16 @@ void BOARD_InitPins(void)
         PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt2); //mosi
         PORT_SetPinMux(PORTA, 25U, kPORT_MuxAsGpio);*/
 
+    /* PORTB16 (pin E10) is configured as UART0_RX */
+   PORT_SetPinMux(PORTB, 16U, kPORT_MuxAlt3);
 
+   /* PORTB17 (pin E9) is configured as UART0_TX */
+   PORT_SetPinMux(PORTB, 17U, kPORT_MuxAlt3);
+
+   /* PORTC9 (pin D7) is configured as PTC9 */
+   PORT_SetPinMux(PORTC, 9U, kPORT_MuxAlt3);//red led
+   PORT_SetPinMux(PORTC, 8U, kPORT_MuxAlt3);//blue led
+   PORT_SetPinMux(PORTD, 1U, kPORT_MuxAlt4);// green led
 
 
 }
