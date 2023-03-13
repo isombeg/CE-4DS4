@@ -421,9 +421,11 @@ const osc_config_t oscConfig_BOARD_BootClockRUN =
 void BOARD_BootClockRUN(void)
 {
 	CLOCK_SetSimSafeDivs();
+
 	CLOCK_SetInternalRefClkConfig(kMCG_IrclkEnable, kMCG_IrcFast, 2);
 	CLOCK_CONFIG_SetFllExtRefDiv(0);
 	CLOCK_SetExternalRefClkConfig(kMCG_OscselIrc);
+    
 	CLOCK_SetSimConfig(&simConfig_BOARD_BootClockRUN);
 	SystemCoreClock = BOARD_BOOTCLOCKRUN_CORE_CLOCK;
 }

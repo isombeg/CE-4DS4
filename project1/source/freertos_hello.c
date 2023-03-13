@@ -22,7 +22,7 @@ int main(void)
 //
     setupMotorComponent();
     setupRCReceiverComponent();
-//    setupTerminalComponent();
+   setupTerminalComponent();
 //    setupLEDComponent();
 //    setupAccelerometerComponent();
 

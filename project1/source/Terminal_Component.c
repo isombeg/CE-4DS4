@@ -145,8 +145,9 @@ void UART4_RX_TX_IRQHandler()
 void terminalControlTask(void* pvParameters)
 {
 	//EventGroupHandle_t event_group = (EventGroupHandle_t)pvParameters;
-	float  dc_dutyCycle;
-	float servo_dutyCycle;
+	// float  dc_dutyCycle;
+	// float servo_dutyCycle;
+	int angle, speed;
 	EventBits_t bits;
 	BaseType_t status;
 
@@ -160,40 +161,39 @@ void terminalControlTask(void* pvParameters)
 									pdFALSE,
 									portMAX_DELAY);
 
-		status = xSemaphoreTake(rc_hold_semaphore, portMAX_DELAY);
+		if(xSemaphoreTake(rc_hold_semaphore, portMAX_DELAY) != pdPASS){
+			PRINTF("[TERMINAL Control Task] Failed to acquire rc_hold_semaphore\r\n");
+			while (1);
+		} 
 
 		if((bits & LEFT_BIT) == LEFT_BIT)
 		{
-			PRINTF("Left\r\n");
-			servo_dutyCycle = .095;
 			//send servo angle to the left through queue
-		}
-
-		if((bits & RIGHT_BIT) == RIGHT_BIT)
+			// PRINTF("Left\r\n");
+			angle = -TERMINAL_TURN_ANGLE;
+		} else if((bits & RIGHT_BIT) == RIGHT_BIT)
 		{
-			PRINTF("Right\r\n");
-			servo_dutyCycle = .055;
 			//send servo angle to the right through queue
-		}
+			// PRINTF("Right\r\n");
+			angle = TERMINAL_TURN_ANGLE;
+		} else angle = 0;
 
 		if((bits & UP_BIT) == UP_BIT)
 		{
-			PRINTF("Up\r\n");
-			dc_dutyCycle = .085;
+			// PRINTF("Up\r\n");
 			//send motor forward through queue
+			speed = TERMINAL_SPEED;
 			//send LED through queue
 
-		}
-
-		if((bits & DOWN_BIT) == DOWN_BIT)
+		} else if((bits & DOWN_BIT) == DOWN_BIT)
 		{
-			PRINTF("Down\r\n");
-			dc_dutyCycle = .065;
-
-		}
-//		status = xQueueSendToBack(motor_queue, (void*) &dc_dutyCycle, portMAX_DELAY);
-//		status = xQueueSendToBack(angle_queue, (void*) &servo_dutyCycle, portMAX_DELAY);
+			// PRINTF("Down\r\n");
+			speed = -TERMINAL_SPEED;
+		} else speed = 0;
+		
+		xQueueSendToBack(motor_queue, (void*) &speed, portMAX_DELAY);
+		xQueueSendToBack(angle_queue, (void*) &angle, portMAX_DELAY);
 //		status = xQueueSendToBack(led_queue, (void*) &1500, portMAX_DELAY);
-		//xSemaphoreGive(rc_hold_semaphore);
+		xSemaphoreGive(rc_hold_semaphore);
 	}
 }

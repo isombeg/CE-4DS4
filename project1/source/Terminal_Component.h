@@ -26,6 +26,9 @@
 #define UP_BIT      (1 << 2)
 #define DOWN_BIT    (1 << 3)
 
+#define TERMINAL_TURN_ANGLE 44
+#define TERMINAL_SPEED 50
+
 extern EventGroupHandle_t event_group;
 extern QueueHandle_t uart_queue;
 

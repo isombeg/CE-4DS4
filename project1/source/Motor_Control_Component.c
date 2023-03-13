@@ -126,6 +126,8 @@ void motorTask(void* pvParameters)
 		);
 		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 
+		// Send message to UART
+		sendMessage("Motor speed: %s", speed); // ?: Confirm this is the way
 	}
 }
 
@@ -135,6 +137,7 @@ void positionTask(void* pvParameters)
 	//Position task implementation
 	BaseType_t status;
 	int angle;
+	char* uart_msg;
 
 	setupServo();
 
@@ -145,12 +148,15 @@ void positionTask(void* pvParameters)
 			while (1);
 		}
 
+		// Update PWM with received angle
 		updatePWM_dutyCycle(
 			FTM_CHANNEL_SERVO,
 			angle_to_dutycycle(angle)
 		);
 		FTM_SetSoftwareTrigger(FTM_MOTORS, true);
 
+		// Send message to UART
+		sendMessage("Wheel Position: %s", angle); // ?: Confirm this is the way
 	}
 }
 
