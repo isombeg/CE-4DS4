@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_HELLO_WORLD
+ bool "hello_world"
+ default n
+ ---help---
+ Enable support for hello_world
