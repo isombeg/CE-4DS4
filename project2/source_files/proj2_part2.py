@@ -3,6 +3,7 @@ import time
 import cv2
 import numpy as np
 import math
+import threading
 from pymavlink import mavutil
 
 #set GPIO Pins
@@ -104,17 +105,17 @@ def motorspeed():
     dist = distance()
     if dist < 15:
         #motor decelerates
-        motor_msg = 0
+        motor_msg = 1
         print("stop");
     elif dist < 50:
         #motor stops
         print("slow down");
-        motor_msg = 1
+        motor_msg = 2
     else:
         #motor maintains constant speed
         print("same_speed");
-        motor_msg = 2
-    time.sleep(0.1)
+        motor_msg = 3
+    #time.sleep(0.1)
     #print ("Measured Distance = %.1f cm" % dist)
     return motor_msg
 def servoangle():
@@ -134,6 +135,10 @@ def servoangle():
         print('Right direction is preferred');
     return servo_msg
     
+def positionThreadTarget():
+	while True:
+		debug_message(servoangle())
+
 #camera definitions
 cap = cv2.VideoCapture(0)
 StepSize = 5
@@ -148,6 +153,10 @@ print("Heartbeat from system (system %u component %u)" % (the_connection.target_
 value = 0
 mavlinkmessage = 0
 
+posThread = threading.Thread(target=positionThreadTarget)
+posThread.start()
+
 while True:
-    debug_message(motorspeed() + servoangle())
-    
+    #debug_message(motorspeed() + servoangle())
+	debug_message(motorspeed())
+
